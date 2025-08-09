@@ -150,6 +150,14 @@ export const orderClientPublic = {
         return response.data;
     },
 
+    initiateWaafiPayPurchase: async (eventId: number, orderShortId: string) => {
+        const response = await publicApi.post<{
+            hppUrl?: string;
+            hppLink?: string;
+        }>(`events/${eventId}/order/${orderShortId}/waafipay/purchase`);
+        return response.data;
+    },
+
     finaliseOrder: async (
         eventId: number,
         orderShortId: string,

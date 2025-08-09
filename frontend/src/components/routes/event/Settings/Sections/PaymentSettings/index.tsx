@@ -86,6 +86,11 @@ export const PaymentAndInvoicingSettings = () => {
             description: t`Accept credit card payments with Stripe`
         },
         {
+            value: "WAAFIPAY",
+            label: t`WaafiPay`,
+            description: t`Accept payments through WaafiPay`
+        },
+        {
             value: "OFFLINE",
             label: t`Offline Payments`,
             description: t`Accept bank transfers, checks, or other offline payment methods`

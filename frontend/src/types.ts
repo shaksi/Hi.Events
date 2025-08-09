@@ -128,7 +128,7 @@ export interface Image {
 
 export type ImageType = 'EVENT_COVER' | 'EDITOR_IMAGE' | 'ORGANIZER_LOGO' | 'ORGANIZER_COVER' | 'ORGANIZER_IMAGE';
 
-export type PaymentProvider = 'STRIPE' | 'OFFLINE';
+export type PaymentProvider = 'STRIPE' | 'OFFLINE' | 'WAAFIPAY';
 
 export interface EventSettings {
     event_id?: IdParam;

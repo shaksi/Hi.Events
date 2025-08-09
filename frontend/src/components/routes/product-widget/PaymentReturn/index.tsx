@@ -22,22 +22,27 @@ export const PaymentReturn = () => {
     const {data: order} = usePollGetOrderPublic(eventId, orderShortId, shouldPoll, ['event']);
     const navigate = useNavigate();
     const [attemptManualConfirmation, setAttemptManualConfirmation] = useState(false);
-    const paymentIntentQuery = useGetOrderStripePaymentIntentPublic(eventId, orderShortId, attemptManualConfirmation);
+    const paymentIntentQuery = useGetOrderStripePaymentIntentPublic(
+        eventId,
+        orderShortId,
+        attemptManualConfirmation && order?.payment_provider === 'STRIPE'
+    );
     const [cannotConfirmPayment, setCannotConfirmPayment] = useState(false);
 
-    useEffect(
-        () => {
-            const timeout = setTimeout(() => {
-                setShouldPoll(false);
-                setAttemptManualConfirmation(true);
-            }, 10000); //todo - this should be a env variable
+    useEffect(() => {
+        if (order?.payment_provider !== 'STRIPE') {
+            return;
+        }
 
-            return () => {
-                clearTimeout(timeout);
-            };
-        },
-        []
-    );
+        const timeout = setTimeout(() => {
+            setShouldPoll(false);
+            setAttemptManualConfirmation(true);
+        }, 10000); //todo - this should be a env variable
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [order?.payment_provider]);
 
     useEffect(() => {
         if (!paymentIntentQuery.isFetched) {
