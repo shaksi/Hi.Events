@@ -166,6 +166,19 @@ export const PaymentAndInvoicingSettings = () => {
                                     />
                                 </Card>
                             )}
+
+                            {form.values.payment_providers?.includes("WAAFIPAY") && (
+                                <Card style={{boxShadow: 'none', marginTop: '20px'}}>
+                                    <h4 style={{
+                                        marginTop: '5px',
+                                        marginBottom: '10px'
+                                    }}>{t`WaafiPay Payments`}</h4>
+                                    <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
+                                        <Text size="sm" mt="xs">{t`When WaafiPay is enabled, attendees will be redirected to the WaafiPay hosted payment page to complete their purchase.`}</Text>
+                                        <Text size="sm" mt="xs">{t`Ensure your WaafiPay merchant credentials are configured on the server before enabling this option.`}</Text>
+                                    </MantineCard>
+                                </Card>
+                            )}
                         </Paper>
 
                         <Paper withBorder p="md" radius="md">
