@@ -4,6 +4,7 @@ import {useGetEventPublic} from "../../../../queries/useGetEventPublic.ts";
 import {CheckoutContent} from "../../../layouts/Checkout/CheckoutContent";
 import {StripePaymentMethod} from "./PaymentMethods/Stripe";
 import {OfflinePaymentMethod} from "./PaymentMethods/Offline";
+import {WaafiPayPaymentMethod} from "./PaymentMethods/WaafiPay";
 import {Event, Order} from "../../../../types.ts";
 import {CheckoutFooter} from "../../../layouts/Checkout/CheckoutFooter";
 import {Group} from "@mantine/core";
@@ -23,23 +24,26 @@ const Payment = () => {
     const {data: order, isFetched: isOrderFetched} = useGetOrderPublic(eventId, orderShortId, ['event']);
     const isLoading = !isOrderFetched;
     const [isPaymentLoading, setIsPaymentLoading] = useState(false);
-    const [activePaymentMethod, setActivePaymentMethod] = useState<'STRIPE' | 'OFFLINE' | null>(null);
+    const [activePaymentMethod, setActivePaymentMethod] = useState<'STRIPE' | 'OFFLINE' | 'WAAFIPAY' | null>(null);
     const [submitHandler, setSubmitHandler] = useState<(() => Promise<void>) | null>(null);
     const transitionOrderToOfflinePaymentMutation = useTransitionOrderToOfflinePaymentPublic();
 
     const isStripeEnabled = event?.settings?.payment_providers?.includes('STRIPE');
     const isOfflineEnabled = event?.settings?.payment_providers?.includes('OFFLINE');
+    const isWaafiPayEnabled = event?.settings?.payment_providers?.includes('WAAFIPAY');
 
     React.useEffect(() => {
         // Automatically set the first available payment method
         if (isStripeEnabled) {
             setActivePaymentMethod('STRIPE');
+        } else if (isWaafiPayEnabled) {
+            setActivePaymentMethod('WAAFIPAY');
         } else if (isOfflineEnabled) {
             setActivePaymentMethod('OFFLINE');
         } else {
             setActivePaymentMethod(null); // No methods available
         }
-    }, [isStripeEnabled, isOfflineEnabled]);
+    }, [isStripeEnabled, isWaafiPayEnabled, isOfflineEnabled]);
 
     const handleParentSubmit = () => {
         if (submitHandler) {
@@ -49,7 +53,7 @@ const Payment = () => {
     };
 
     const handleSubmit = async () => {
-        if (activePaymentMethod === 'STRIPE') {
+        if (activePaymentMethod === 'STRIPE' || activePaymentMethod === 'WAAFIPAY') {
             handleParentSubmit();
         } else if (activePaymentMethod === 'OFFLINE') {
             setIsPaymentLoading(true);
@@ -69,7 +73,7 @@ const Payment = () => {
         }
     };
 
-    if (!isStripeEnabled && !isOfflineEnabled && isOrderFetched && isEventFetched) {
+    if (!isStripeEnabled && !isWaafiPayEnabled && !isOfflineEnabled && isOrderFetched && isEventFetched) {
         return (
             <CheckoutContent>
                 <Card>
@@ -88,23 +92,47 @@ const Payment = () => {
                     </div>
                 )}
 
+                {isWaafiPayEnabled && (
+                    <div style={{display: activePaymentMethod === 'WAAFIPAY' ? 'block' : 'none'}}>
+                        <WaafiPayPaymentMethod enabled={true} setSubmitHandler={setSubmitHandler}/>
+                    </div>
+                )}
+
                 {isOfflineEnabled && (
                     <div style={{display: activePaymentMethod === 'OFFLINE' ? 'block' : 'none'}}>
                         <OfflinePaymentMethod event={event as Event}/>
                     </div>
                 )}
 
-                {(isStripeEnabled && isOfflineEnabled) && (
+                {((isStripeEnabled && isOfflineEnabled) || (isWaafiPayEnabled && isOfflineEnabled)) && (
                     <div style={{marginTop: '20px'}}>
                         <a
                             onClick={() => setActivePaymentMethod(
-                                activePaymentMethod === 'STRIPE' ? 'OFFLINE' : 'STRIPE'
+                                activePaymentMethod === 'OFFLINE'
+                                    ? (isStripeEnabled ? 'STRIPE' : 'WAAFIPAY')
+                                    : 'OFFLINE'
+                            )}
+                            style={{cursor: 'pointer'}}
+                        >
+                            {activePaymentMethod === 'OFFLINE'
+                                ? t`I would like to pay using an online method (credit card etc.)`
+                                : t`I would like to pay using an offline method`
+                            }
+                        </a>
+                    </div>
+                )}
+
+                {(isStripeEnabled && isWaafiPayEnabled) && (
+                    <div style={{marginTop: '20px'}}>
+                        <a
+                            onClick={() => setActivePaymentMethod(
+                                activePaymentMethod === 'STRIPE' ? 'WAAFIPAY' : 'STRIPE'
                             )}
                             style={{cursor: 'pointer'}}
                         >
                             {activePaymentMethod === 'STRIPE'
-                                ? t`I would like to pay using an offline method`
-                                : t`I would like to pay using an online method (credit card etc.)`
+                                ? t`I would like to pay using WaafiPay`
+                                : t`I would like to pay using Stripe`
                             }
                         </a>
                     </div>

@@ -141,6 +141,18 @@ STRIPE_SECRET_KEY=your_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret
 ```
 
+11. **Optional: Configure WaafiPay (for Payment Integration):**
+
+To test the WaafiPay hosted payment gateway, add the following variables to your `.env` file:
+
+```bash
+WAAFI_API_URL=https://api.sandbox.waafipay.com
+WAAFI_MERCHANT_UID=your_merchant_uid
+WAAFI_STORE_ID=your_store_id
+WAAFI_HPP_KEY=your_hpp_key
+WAAFI_LOG_REQUESTS=false
+```
+
 ### Frontend Setup
 
 #### 1. **Create the `.env` File:**

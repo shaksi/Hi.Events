@@ -36,6 +36,13 @@ return [
         'public_key' => env('STRIPE_PUBLIC_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
+    'waafipay' => [
+        'api_url' => env('WAAFI_API_URL'),
+        'merchant_uid' => env('WAAFI_MERCHANT_UID'),
+        'store_id' => env('WAAFI_STORE_ID'),
+        'hpp_key' => env('WAAFI_HPP_KEY'),
+        'log_requests' => env('WAAFI_LOG_REQUESTS', false),
+    ],
     'open_exchange_rates' => [
         'app_id' => env('OPEN_EXCHANGE_RATES_APP_ID'),
     ],

@@ -40,3 +40,8 @@ services:
       QUEUE_CONNECTION: "redis"
       DATABASE_URL: ""
       STRIPE_WEBHOOK_SECRET: ""
+      WAAFI_API_URL: ""
+      WAAFI_MERCHANT_UID: ""
+      WAAFI_STORE_ID: ""
+      WAAFI_HPP_KEY: ""
+      WAAFI_LOG_REQUESTS: "false"
